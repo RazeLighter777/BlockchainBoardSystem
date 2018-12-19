@@ -41,6 +41,14 @@ public class Post
     boolean isRootPost = false;
 
     /**
+     * 
+     * @return The contents of the post.
+     */
+    public String getContent()
+    {
+        return new String(content);
+    }
+    /**
      * Joins multiple arrays of bytes
      * @param array Multiple parameters of byte arrays to be conjoined
      * @return The conjoined array
@@ -108,6 +116,5 @@ public class Post
 
 
     }
-
-
+    
 }

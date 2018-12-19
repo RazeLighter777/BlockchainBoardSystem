@@ -26,7 +26,7 @@ public class TestPost {
             name = (new String("bobby")).getBytes();
 
             //Create a new user.
-            BoardServer.User testUser = new BoardServer.User(name, pub);
+            BoardServer.User testUser = new BoardServer.User(name, pub, pem);
             //Create a new post.
             BoardServer.Post testPost = new BoardServer.Post(testUser, pem, testUser.getId(), content, true);
 
