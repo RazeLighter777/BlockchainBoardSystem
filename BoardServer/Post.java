@@ -10,8 +10,9 @@ import java.util.stream.Stream;
 import java.util.Arrays;
 import java.lang.reflect.Array;
 import java.security.MessageDigest;
+import java.io.Serializable;
 
-public class Post
+public class Post implements Serializable
 {
     
     /**
@@ -24,7 +25,7 @@ public class Post
     private byte[] userId = new byte[Constants.HASH_SIZE];
     
     /**
-     * PostId of the post this post is in response to.
+     * PostId (essentially hash) of the post this post is in response to.
      */
     private byte[] responseId = new byte[Constants.HASH_SIZE];
     /**
@@ -47,6 +48,21 @@ public class Post
     public String getContent()
     {
         return new String(content);
+    }
+    
+    public byte[] getPostId()
+    {
+        return postId;
+    }
+    
+    public byte[] getResponseId()
+    {
+        return responseId;
+    }
+    
+    public boolean isRoot()
+    {
+        return isRootPost;
     }
     /**
      * Joins multiple arrays of bytes
@@ -72,7 +88,7 @@ public class Post
     /**
      * 
      * @param postingUser The user object of the posting user.
-     * @param userPrivateKey The private key of the posting user so thier post can be verified.
+     * @param userPrivateKey The private key of the posting user so their post can be verified.
      * @param responseId The Post id of the post this is in response to.
      * @param content The contents of the post.
      */
@@ -117,4 +133,26 @@ public class Post
 
     }
     
+    /**
+     * Serialization constructor that verifies the post has a good signature.
+     * @throws SignatureException If the post does not have a valid signature.
+     * @throws NoSuchUserException If the posts user cannot be looked up.
+     */
+    public Post() throws SignatureException, NoSuchUserException
+    {
+        try{
+            Signature verifier = Signature.getInstance("SHA256withRSA");
+            User postUser = BoardServer.lookupUser(userId);
+            verifier.initVerify(postUser.getPublicKey());
+            verifier.update(joinArray(content, responseId, userId));
+            if (!verifier.verify(signature))
+            {
+                throw(new SignatureException("User post signature failed verification."));
+            }
+        }
+        catch (NoSuchAlgorithmException | InvalidKeyException e)
+        {
+            System.out.println(e.toString());
+        }
+    }
 }

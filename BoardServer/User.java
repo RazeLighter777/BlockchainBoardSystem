@@ -63,7 +63,7 @@ public class User
      * @param pubkey The public key of the user.
      * @param signature_ The signature of the users name.
      */
-    public User(byte[] name_, PublicKey pubkey, byte[] signature_)
+    public User(byte[] name_, PublicKey pubkey, byte[] signature_) throws SignatureException
     {
         publicKey = pubkey;
         name = name_;
@@ -81,7 +81,7 @@ public class User
             boolean ok = verifier.verify(signature_);
             if (!ok)
             {
-                throw(new InvalidKeyException());
+                throw(new SignatureException());
             }
         }
         catch (NoSuchAlgorithmException e)
@@ -92,11 +92,6 @@ public class User
         {
             System.out.println(e.toString());
         }
-        catch (SignatureException e)
-        {
-            System.out.println(e.toString());
-        }
-        
 
     } 
     
