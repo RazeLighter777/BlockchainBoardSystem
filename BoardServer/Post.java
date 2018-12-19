@@ -50,7 +50,7 @@ public class Post implements Serializable
         return new String(content);
     }
     
-    public byte[] getPostId()
+    public byte[] getId()
     {
         return postId;
     }
