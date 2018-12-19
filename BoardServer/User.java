@@ -1,6 +1,9 @@
 package BoardServer;
 
 import java.security.PublicKey;
+
+import com.sun.org.apache.bcel.internal.classfile.Signature;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 /**
@@ -54,19 +57,22 @@ public class User
     }
 
     /**
-     * 
+     * Creates a new user from thier public key and signature.
      * @param name Must be NAME_SIZE in length. Refers to the username of the user. This name means nothing.
      * @param pubkey The public key of the user.
+     * @param signature_ The signature of the users name.
      */
-    public User(byte[] name_, PublicKey pubkey)
+    public User(byte[] name_, PublicKey pubkey, Signature signature_)
     {
         publicKey = pubkey;
         name = name_;
         //Hash the name and public key.
         try{
+            //Hash the users name and public key for thier id they can be refered to by.
             MessageDigest hasher = MessageDigest.getInstance("SHA-256");
             hasher.update(Post.joinArray(name,publicKey.getEncoded()));
             id = hasher.digest();
+            //Verify the users signature
         }
         catch (NoSuchAlgorithmException e)
         {
