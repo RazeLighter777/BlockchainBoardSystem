@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.net.InetAddress;
 import java.net.*;
 import java.io.*;
+import com.google.gson.*;
+
 
 
 /**
@@ -58,8 +60,31 @@ public class BoardServer
         throw (new NoSuchPostException("No post found in local cache"));
     }
     
-    private void sendJSONRequest()
+    /**
+     * Sends a JSON document to the given IP addresses
+     * @param ips The IP addresses to send the document to.
+     * @param doc The actual document.
+     */
+    public static void sendJSONRequest(ArrayList<InetAddress> ips, Gson doc)
     {
+        for (InetAddress ip : ips)
+        {
+            try 
+            {
+                Socket sock = new Socket(ip, 4096);
+                DataOutputStream out = new DataOutputStream(sock.getOutputStream());
+                String documentString = doc.toString();
+                out.write(documentString.getBytes());
+                sock.close();
+            }
+            catch (IOException e)
+            {
+                System.out.println(e.toString());
+            }
+            
+            
+            
+        }
         
     }
     /**
