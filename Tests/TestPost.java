@@ -4,10 +4,13 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PublicKey;
 import java.util.Arrays;
-
 import BoardServer.Constants;
-
 import java.security.PrivateKey;
+import com.google.gson.*;
+import java.util.ArrayList;
+import java.net.InetAddress;
+import java.net.*;
+import java.io.*;
 
 public class TestPost {
     public static void main(String[] args)
@@ -15,7 +18,7 @@ public class TestPost {
         try
         {
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-            kpg.initialize(512);
+            kpg.initialize(1024);
             KeyPair kp = kpg.generateKeyPair();
             PublicKey pub = kp.getPublic();
             PrivateKey pem = kp.getPrivate();
@@ -30,9 +33,14 @@ public class TestPost {
             //Create a new post.
             BoardServer.Post testPost = new BoardServer.Post(testUser, pem, testUser.getId(), content, true);
 
-            System.out.println(Constants.bytesToHex(testUser.getId()));
+            System.out.println(testPost.getContent());
+            
 
-
+            ArrayList<InetAddress> addresses = new ArrayList<>();
+            addresses.add(InetAddress.getByName("192.168.1.254"));
+            
+            
+            
         }
         catch (Exception e)
         {

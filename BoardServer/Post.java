@@ -12,9 +12,8 @@ import java.lang.reflect.Array;
 import java.security.MessageDigest;
 import java.io.Serializable;
 
-public class Post implements Serializable
-{
-    
+public class Post implements Serializable {
+
     /**
      * The content of the post.
      */
@@ -23,7 +22,7 @@ public class Post implements Serializable
      * The hash of the user who made the post.
      */
     private byte[] userId = new byte[Constants.HASH_SIZE];
-    
+
     /**
      * PostId (essentially hash) of the post this post is in response to.
      */
@@ -42,30 +41,28 @@ public class Post implements Serializable
     boolean isRootPost = false;
 
     /**
-     * 
+     *
      * @return The contents of the post.
      */
-    public String getContent()
-    {
+    public String getContent() {
         return new String(content);
     }
-    
-    public byte[] getId()
-    {
+
+    public byte[] getId() {
         return postId;
     }
-    
-    public byte[] getResponseId()
-    {
+
+    public byte[] getResponseId() {
         return responseId;
     }
-    
-    public boolean isRoot()
-    {
+
+    public boolean isRoot() {
         return isRootPost;
     }
+
     /**
      * Joins multiple arrays of bytes
+     *
      * @param array Multiple parameters of byte arrays to be conjoined
      * @return The conjoined array
      */
@@ -85,15 +82,16 @@ public class Post implements Serializable
 
         return result;
     }
+
     /**
-     * 
+     *
      * @param postingUser The user object of the posting user.
-     * @param userPrivateKey The private key of the posting user so their post can be verified.
+     * @param userPrivateKey The private key of the posting user so their post
+     * can be verified.
      * @param responseId The Post id of the post this is in response to.
      * @param content The contents of the post.
      */
-    public Post(User postingUser, PrivateKey userPrivateKey, byte[] responseId_, byte[] content_, boolean isRootPost_)
-    {   
+    public Post(User postingUser, PrivateKey userPrivateKey, byte[] responseId_, byte[] content_, boolean isRootPost_) {
         //Copy the content and the responseId to this class. 
         content = content_;
         //Set the users id.
@@ -101,8 +99,7 @@ public class Post implements Serializable
         //Is root post?
         isRootPost = isRootPost_;
         //Copy the response id of the post.
-        if (!isRootPost)
-        {
+        if (!isRootPost) {
             responseId = responseId_;
         }
         //Get the signature of this posts content, responseId, and userId.
@@ -116,42 +113,33 @@ public class Post implements Serializable
             MessageDigest hasher = MessageDigest.getInstance("SHA-256");
             hasher.update(joinArray(content, responseId, userId, signature));
             postId = hasher.digest();
-            
-        } catch (NoSuchAlgorithmException e)
-        {
+
+        } catch (NoSuchAlgorithmException e) {
             System.out.println("Error finding SHA256withRSA algorithm" + e.getMessage());
-        }
-        catch (InvalidKeyException e)
-        {
+        } catch (InvalidKeyException e) {
             System.out.println("That key is not valid for some reason." + e.getMessage());
-        }
-        catch (SignatureException e)
-        {
+        } catch (SignatureException e) {
             System.out.println("Signature exception." + e.getMessage());
         }
 
-
     }
-    
+
     /**
      * Serialization constructor that verifies the post has a good signature.
+     *
      * @throws SignatureException If the post does not have a valid signature.
      * @throws NoSuchUserException If the posts user cannot be looked up.
      */
-    public Post() throws SignatureException, NoSuchUserException
-    {
-        try{
+    public Post() throws SignatureException, NoSuchUserException {
+        try {
             Signature verifier = Signature.getInstance("SHA256withRSA");
             User postUser = BoardServer.lookupUser(userId);
             verifier.initVerify(postUser.getPublicKey());
             verifier.update(joinArray(content, responseId, userId));
-            if (!verifier.verify(signature))
-            {
-                throw(new SignatureException("User post signature failed verification."));
+            if (!verifier.verify(signature)) {
+                throw (new SignatureException("User post signature failed verification."));
             }
-        }
-        catch (NoSuchAlgorithmException | InvalidKeyException e)
-        {
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             System.out.println(e.toString());
         }
     }
